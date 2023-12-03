@@ -26,14 +26,12 @@ def consume():
     try:
         while True:
             msg = consumer.poll(1.0)
-            print(msg)
             if msg is None:
                 continue
             if msg.error():
                 print(msg.error())
                 break
                 
-            # Processa a mensagem
             payload = msg.value().decode('utf-8')
             payload = json.loads(payload)
             print(payload)
@@ -61,9 +59,10 @@ def consume():
 def produce(condition: bool,name ) -> None:
     kafka_config  = {"bootstrap.servers":"localhost:9092"}
     producer = Producer(kafka_config)
-    producer.produce('cadastro', key=name, value=json.dumps({"condition":condition, "name":name}))
+    producer.produce('cadastro', key=name, value=json.dumps({"condition":condition, "name":name, "topic": "cadastro"}))
     producer.poll(0)
     producer.flush()
-# Inicia o thread do consumidor
+
+
 consumer_thread = Thread(target=consume)
 consumer_thread.start()
